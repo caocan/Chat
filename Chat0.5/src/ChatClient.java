@@ -3,11 +3,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
 
 public class ChatClient extends Frame{
 
+    Socket s;
     TextField tfTxt = new TextField();
     TextArea taContent = new TextArea();
 
@@ -37,7 +38,7 @@ public class ChatClient extends Frame{
     //该客户端用于和服务器连接，如果连接成功，输出“已连接”的字样
     public void connect(){
         try {
-            Socket s = new Socket("127.0.0.1", 8888);
+            s = new Socket("127.0.0.1", 8888);
             System.out.println("已连接！");
         }catch (UnknownHostException e){
             e.printStackTrace();
@@ -51,9 +52,19 @@ public class ChatClient extends Frame{
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            String s = tfTxt.getText().trim();
-            taContent.setText(s);
+            String str = tfTxt.getText().trim();
+            taContent.setText(str);
             tfTxt.setText("");  //输入框清空
+
+            try {
+                DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+                dos.writeUTF(str);
+                dos.flush();
+                dos.close();
+            }
+            catch (IOException e1){
+                e1.printStackTrace();
+            }
         }
     }
 }
