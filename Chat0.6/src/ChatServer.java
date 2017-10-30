@@ -15,7 +15,10 @@ public class ChatServer {
         //定义一个ServerSocket，该ServerSocket用于接收端口号为8888的客户端
         try {
             ss = new ServerSocket(8888);
-        }catch (IOException e) {
+        }catch (BindException e){
+            System.out.println("端口使用中");
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -38,11 +41,12 @@ public class ChatServer {
                 }
 //                dis.close();
             }
-        } catch (IOException e) { //捕捉到客户端关闭时的异常，就关闭服务器
-
-//            e.printStackTrace();
+        }catch (EOFException e){    //捕捉到客户端关闭时的异常，就关闭服务器
             System.out.println("客户端关闭了！");
-        }finally {
+        }
+        catch (IOException e) {     //其他错误直接打印
+            e.printStackTrace();
+        }finally {  //最后一定执行关闭资源
             try {
                 if(dis != null) dis.close();
                 if(s != null) s.close();
