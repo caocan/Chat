@@ -7,6 +7,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
@@ -127,6 +128,8 @@ public class ChatClient extends Frame{
                     taContent.setText(taContent.getText() + str + '\n');
                 }
             } catch (SocketException e){
+                System.out.println("退出了，bye bye!");
+            } catch (EOFException e){
                 System.out.println("退出了，bye bye!");
             }
             catch (IOException e) {

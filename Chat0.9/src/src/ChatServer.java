@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,12 +85,16 @@ public class ChatServer {
             try {
                 dos.writeUTF(str);
             } catch (IOException e) {
-                e.printStackTrace();
+                clients.remove(this);
+                System.out.println("对方退出了！我从list中去除了！");
             }
         }
 
         @Override
         public void run() {
+
+            Client c = null;
+
             try {
                 while (bConnected) {
                     String str = dis.readUTF();
@@ -97,9 +102,9 @@ public class ChatServer {
 
                     //将客户端发来的信息再转发给客户端
                     for(int i = 0; i < clients.size(); i++){
-                        Client c = clients.get(i);
+                        c = clients.get(i);
                         c.send(str);
-                        System.out.println("发出了一句话!");
+//                        System.out.println("发出了一句话!");
                     }
                     /*for(Iterator<Client> it = clients.iterator(); it.hasNext();){
                         Client c = it.next();
@@ -112,6 +117,9 @@ public class ChatServer {
                     }
                     */
                 }
+            }catch (SocketException e){
+                clients.remove(this);
+                System.out.println("一个客户端移除");
             }catch (EOFException e){    //捕捉到客户端关闭时的异常，就关闭服务器
                 System.out.println("客户端关闭了！");
             }
@@ -121,13 +129,13 @@ public class ChatServer {
                 try {
                     if(dis != null) dis.close();
                     if(dos != null) dos.close();
-                    if(s != null) {
-                        s.close();
-                        s = null;
-                    }
+                    if(s != null) s.close();
+
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
+
+
             }
         }
     }
